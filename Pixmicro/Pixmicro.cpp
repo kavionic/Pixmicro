@@ -38,14 +38,16 @@ Pixmicro::Pixmicro(QWidget *parent) : QMainWindow(parent)
     addDockWidget(Qt::RightDockWidgetArea, dockWnd);
     m_MenuWindows->addAction(dockWnd->toggleViewAction());
 
-    dockWnd = new EdgeDetectWnd();
-    addDockWidget(Qt::RightDockWidgetArea, dockWnd);
-    m_MenuWindows->addAction(dockWnd->toggleViewAction());
-
     m_HoleDetectWnd = new HoleDetectWnd();
     addDockWidget(Qt::RightDockWidgetArea, m_HoleDetectWnd);
     m_MenuWindows->addAction(m_HoleDetectWnd->toggleViewAction());
     connect(m_HoleDetectWnd, &HoleDetectWnd::SignalCalibrateCrosshair, this, &Pixmicro::SlotCalibrateCrosshair);
+
+    dockWnd = new EdgeDetectWnd();
+    dockWnd->setVisible(false);
+    addDockWidget(Qt::RightDockWidgetArea, dockWnd);
+    m_MenuWindows->addAction(dockWnd->toggleViewAction());
+
 
     connect(&m_CaptureWorker, &CaptureThread::SignalFrameReady, this, &Pixmicro::SlotFrameReady);
 
