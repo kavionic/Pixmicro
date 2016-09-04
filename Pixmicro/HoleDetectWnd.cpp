@@ -19,15 +19,12 @@
 #include "stdafx.h"
 #include "HoleDetectWnd.h"
 
-HoleDetectWnd* HoleDetectWnd::s_Instance;
-
 ///////////////////////////////////////////////////////////////////////////////
 ///
 ///////////////////////////////////////////////////////////////////////////////
 
 HoleDetectWnd::HoleDetectWnd(QWidget *parent) : QDockWidget(parent)
 {
-    s_Instance = this;
     setupUi(this);
 
     QSettings prefs;
@@ -125,6 +122,8 @@ void HoleDetectWnd::UpdateCenterColor(const QColor& color)
 void HoleDetectWnd::SlotEnableCBChanged(bool checked)
 {
     QSettings().setValue("HoleDetect/Enabled", checked);
+
+    emit SignalEnableChanged(checked);
 }
 
 ///////////////////////////////////////////////////////////////////////////////
@@ -137,6 +136,7 @@ void HoleDetectWnd::SlotFreezeHoleColorCBChanged(bool checked)
     if (checked) {
         QSettings().setValue("HoleDetect/CenterColor", m_CenterColor);
     }
+    emit SignalFreezeHoleColorChanged(checked);
 }
 
 ///////////////////////////////////////////////////////////////////////////////
@@ -147,6 +147,8 @@ void HoleDetectWnd::SlotMarkerAlphaValueChanged(int value)
 {
     m_MarkerColor.setAlpha(value);
     QSettings().setValue("HoleDetect/MarkerColor", m_MarkerColor);
+
+    emit SignalMarkerColorChanged(m_MarkerColor);
 }
 
 ///////////////////////////////////////////////////////////////////////////////
@@ -156,6 +158,7 @@ void HoleDetectWnd::SlotMarkerAlphaValueChanged(int value)
 void HoleDetectWnd::SlotMarkerWidthValueChanged(int value)
 {
     QSettings().setValue("HoleDetect/MarkerWidth", value);
+    emit SignalMarkerWidthChanged(value);
 }
 
 ///////////////////////////////////////////////////////////////////////////////
@@ -165,6 +168,7 @@ void HoleDetectWnd::SlotMarkerWidthValueChanged(int value)
 void HoleDetectWnd::SlotThresholdValueChanged(int value)
 {
     QSettings().setValue("HoleDetect/Threshold", value);
+    emit SignalThresholdChanged(GetThreshold());
 }
 
 ///////////////////////////////////////////////////////////////////////////////
@@ -174,6 +178,7 @@ void HoleDetectWnd::SlotThresholdValueChanged(int value)
 void HoleDetectWnd::SlotRoundnessValueChanged(int value)
 {
     QSettings().setValue("HoleDetect/Roundness", value);
+    emit SignalRoundnessChanged(GetRoundness());
 }
 
 ///////////////////////////////////////////////////////////////////////////////
@@ -202,12 +207,14 @@ void HoleDetectWnd::SlotMarkerColorFinished(int result)
         m_MarkerColorView->SetColor(m_MarkerColor);
 
         QSettings().setValue("HoleDetect/MarkerColor", m_MarkerColor);
+        emit SignalMarkerColorChanged(m_MarkerColor);
     }
     else
     {
         m_MarkerColorView->SetColor(m_PrevMarkerColor);
         m_MarkerColor = m_PrevMarkerColor;
         m_MarkerColor.setAlpha(m_MarkerAlphaSlider->value());
+        emit SignalMarkerColorChanged(m_MarkerColor);
     }
     m_MarkerColorDialog.reset();
 }
@@ -221,4 +228,5 @@ void HoleDetectWnd::SlotMarkerColorChanged(const QColor& color)
     m_MarkerColor = color;
     m_MarkerColorView->SetColor(color);
     m_MarkerColor.setAlpha(m_MarkerAlphaSlider->value());
+    emit SignalMarkerColorChanged(m_MarkerColor);
 }

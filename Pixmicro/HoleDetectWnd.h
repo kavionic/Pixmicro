@@ -28,12 +28,17 @@ class HoleDetectWnd : public QDockWidget, public Ui::HoleDetectWnd
 
 signals:
     void SignalCalibrateCrosshair();
+    void SignalEnableChanged(bool enabled);
+    void SignalFreezeHoleColorChanged(bool freeze);
+    void SignalThresholdChanged(double value);
+    void SignalRoundnessChanged(double value);
+    void SignalMarkerColorChanged(const QColor& color);
+    void SignalMarkerWidthChanged(int value);
+
 
 public:
     HoleDetectWnd(QWidget *parent = 0);
     ~HoleDetectWnd();
-
-    static HoleDetectWnd* Get() { return s_Instance;  }
 
     bool   IsEnabled() const;
     bool   IsCenterColorFrozen() const;
@@ -57,7 +62,6 @@ private:
     void SlotMarkerColorFinished(int result);
     void SlotMarkerColorChanged(const QColor& color);
 
-    static HoleDetectWnd* s_Instance;
     QColor         m_CenterColor;
     QColor         m_PrevMarkerColor;
     QColor         m_MarkerColor;

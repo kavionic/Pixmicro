@@ -113,6 +113,93 @@
     <ClCompile Include="GeneratedFiles\Release\moc_HoleDetectWnd.cpp">
       <Filter>Generated Files\Release</Filter>
     </ClCompile>
+    <ClCompile Include="GalleryWnd.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="GeneratedFiles\Debug\moc_GalleryWnd.cpp">
+      <Filter>Generated Files\Debug</Filter>
+    </ClCompile>
+    <ClCompile Include="GeneratedFiles\Release\moc_GalleryWnd.cpp">
+      <Filter>Generated Files\Release</Filter>
+    </ClCompile>
+    <ClCompile Include="MeasureWnd.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="GeneratedFiles\Debug\moc_MeasureWnd.cpp">
+      <Filter>Generated Files\Debug</Filter>
+    </ClCompile>
+    <ClCompile Include="GeneratedFiles\Release\moc_MeasureWnd.cpp">
+      <Filter>Generated Files\Release</Filter>
+    </ClCompile>
+    <ClCompile Include="MeasureNode.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="ValuePrefixes.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="GeneratedFiles\Debug\moc_ValuePrefixes.cpp">
+      <Filter>Generated Files\Debug</Filter>
+    </ClCompile>
+    <ClCompile Include="GeneratedFiles\Release\moc_ValuePrefixes.cpp">
+      <Filter>Generated Files\Release</Filter>
+    </ClCompile>
+    <ClCompile Include="EditCommands.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="VisualSettings.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="GeneratedFiles\Debug\moc_VisualSettings.cpp">
+      <Filter>Generated Files\Debug</Filter>
+    </ClCompile>
+    <ClCompile Include="GeneratedFiles\Release\moc_VisualSettings.cpp">
+      <Filter>Generated Files\Release</Filter>
+    </ClCompile>
+    <ClCompile Include="GeneratedFiles\Debug\moc_MeasureNode.cpp">
+      <Filter>Generated Files\Debug</Filter>
+    </ClCompile>
+    <ClCompile Include="GeneratedFiles\Release\moc_MeasureNode.cpp">
+      <Filter>Generated Files\Release</Filter>
+    </ClCompile>
+    <ClCompile Include="GeneratedFiles\Release\moc_CaptureThread.cpp">
+      <Filter>Generated Files\Release</Filter>
+    </ClCompile>
+    <ClCompile Include="MeasurePointList.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="GeneratedFiles\Debug\moc_MeasurePointList.cpp">
+      <Filter>Generated Files\Debug</Filter>
+    </ClCompile>
+    <ClCompile Include="GeneratedFiles\Release\moc_MeasurePointList.cpp">
+      <Filter>Generated Files\Release</Filter>
+    </ClCompile>
+    <ClCompile Include="MeasureLength.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="GeneratedFiles\Debug\moc_MeasureLength.cpp">
+      <Filter>Generated Files\Debug</Filter>
+    </ClCompile>
+    <ClCompile Include="GeneratedFiles\Release\moc_MeasureLength.cpp">
+      <Filter>Generated Files\Release</Filter>
+    </ClCompile>
+    <ClCompile Include="MeasureArea.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="GeneratedFiles\Debug\moc_MeasureArea.cpp">
+      <Filter>Generated Files\Debug</Filter>
+    </ClCompile>
+    <ClCompile Include="GeneratedFiles\Release\moc_MeasureArea.cpp">
+      <Filter>Generated Files\Release</Filter>
+    </ClCompile>
+    <ClCompile Include="MeasureCircle.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="GeneratedFiles\Debug\moc_MeasureCircle.cpp">
+      <Filter>Generated Files\Debug</Filter>
+    </ClCompile>
+    <ClCompile Include="GeneratedFiles\Release\moc_MeasureCircle.cpp">
+      <Filter>Generated Files\Release</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="GeneratedFiles\ui_Pixmicro.h">
@@ -120,9 +207,6 @@
     </ClInclude>
     <ClInclude Include="stdafx.h">
       <Filter>Source Files</Filter>
-    </ClInclude>
-    <ClInclude Include="GeneratedFiles\ui_CameraSelect.h">
-      <Filter>Generated Files</Filter>
     </ClInclude>
     <ClInclude Include="GeneratedFiles\ui_CameraSelectWnd.h">
       <Filter>Generated Files</Filter>
@@ -135,6 +219,15 @@
     </ClInclude>
     <ClInclude Include="GeneratedFiles\ui_HoleDetectWnd.h">
       <Filter>Generated Files</Filter>
+    </ClInclude>
+    <ClInclude Include="GeneratedFiles\ui_GalleryWnd.h">
+      <Filter>Generated Files</Filter>
+    </ClInclude>
+    <ClInclude Include="GeneratedFiles\ui_MeasureWnd.h">
+      <Filter>Generated Files</Filter>
+    </ClInclude>
+    <ClInclude Include="EditCommands.h">
+      <Filter>Source Files</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>
@@ -149,9 +242,6 @@
     </CustomBuild>
     <CustomBuild Include="CaptureThread.h">
       <Filter>Source Files</Filter>
-    </CustomBuild>
-    <CustomBuild Include="CameraSelect.ui">
-      <Filter>Form Files</Filter>
     </CustomBuild>
     <CustomBuild Include="CameraSelectWnd.ui">
       <Filter>Form Files</Filter>
@@ -181,6 +271,39 @@
       <Filter>Form Files</Filter>
     </CustomBuild>
     <CustomBuild Include="HoleDetectWnd.h">
+      <Filter>Source Files</Filter>
+    </CustomBuild>
+    <CustomBuild Include="GalleryWnd.ui">
+      <Filter>Form Files</Filter>
+    </CustomBuild>
+    <CustomBuild Include="MeasureWnd.ui">
+      <Filter>Form Files</Filter>
+    </CustomBuild>
+    <CustomBuild Include="MeasureWnd.h">
+      <Filter>Source Files</Filter>
+    </CustomBuild>
+    <CustomBuild Include="GalleryWnd.h">
+      <Filter>Source Files</Filter>
+    </CustomBuild>
+    <CustomBuild Include="ValuePrefixes.h">
+      <Filter>Source Files</Filter>
+    </CustomBuild>
+    <CustomBuild Include="VisualSettings.h">
+      <Filter>Source Files</Filter>
+    </CustomBuild>
+    <CustomBuild Include="MeasureNode.h">
+      <Filter>Source Files</Filter>
+    </CustomBuild>
+    <CustomBuild Include="MeasurePointList.h">
+      <Filter>Source Files</Filter>
+    </CustomBuild>
+    <CustomBuild Include="MeasureLength.h">
+      <Filter>Source Files</Filter>
+    </CustomBuild>
+    <CustomBuild Include="MeasureArea.h">
+      <Filter>Source Files</Filter>
+    </CustomBuild>
+    <CustomBuild Include="MeasureCircle.h">
       <Filter>Source Files</Filter>
     </CustomBuild>
   </ItemGroup>

@@ -21,6 +21,9 @@
 #include "CameraSelectWnd.h"
 #include "EdgeDetectWnd.h"
 #include "HoleDetectWnd.h"
+#include "GalleryWnd.h"
+#include "MeasureWnd.h"
+#include "ValuePrefixes.h"
 #include "CameraSettings.h"
 
 ///////////////////////////////////////////////////////////////////////////////
@@ -29,33 +32,31 @@
 
 Pixmicro::Pixmicro(QWidget *parent) : QMainWindow(parent)
 {
-    qRegisterMetaType<cv::Mat>();
+//    qRegisterMetaType<cv::Mat>();
     setupUi(this);
 
-    QDockWidget* dockWnd;
-
-    dockWnd = new CameraSelectWnd();
-    addDockWidget(Qt::RightDockWidgetArea, dockWnd);
-    m_MenuWindows->addAction(dockWnd->toggleViewAction());
-
-    m_HoleDetectWnd = new HoleDetectWnd();
-    addDockWidget(Qt::RightDockWidgetArea, m_HoleDetectWnd);
-    m_MenuWindows->addAction(m_HoleDetectWnd->toggleViewAction());
-    connect(m_HoleDetectWnd, &HoleDetectWnd::SignalCalibrateCrosshair, this, &Pixmicro::SlotCalibrateCrosshair);
-
-    dockWnd = new EdgeDetectWnd();
-    dockWnd->setVisible(false);
-    addDockWidget(Qt::RightDockWidgetArea, dockWnd);
-    m_MenuWindows->addAction(dockWnd->toggleViewAction());
-
+    CreateDockWindows();
+    CreateToolbars();
 
     connect(&m_CaptureWorker, &CaptureThread::SignalFrameReady, this, &Pixmicro::SlotFrameReady);
+
 
     m_CaptureWorker.SetThread(&m_CaptureThread);
 
     StartCapture();
     connect(CameraSettings::GetInstance(), &CameraSettings::SignalSelectedCameraChanged, this, &Pixmicro::SlotSelectedCameraChanged);
     m_CaptureWorker.OpenCamera(CameraSettings::GetInstance()->GetSelectedCamera());
+
+
+    QUndoStack* undoStack = m_VideoView->GetUndoStack();
+    QAction* undoAction = undoStack->createUndoAction(this);
+    QAction* redoAction = undoStack->createRedoAction(this);
+    
+    undoAction->setShortcut(QKeySequence::Undo);
+    redoAction->setShortcut(QKeySequence::Redo);
+
+    m_MenuEdit->addAction(undoAction);
+    m_MenuEdit->addAction(redoAction);
 
     const auto& cameraList = QCameraInfo::availableCameras();
     auto cameraCount = cameraList.count();
@@ -75,6 +76,56 @@ Pixmicro::Pixmicro(QWidget *parent) : QMainWindow(parent)
 
     restoreGeometry(prefs.value("MainWindow/geometry").toByteArray());
     restoreState(prefs.value("MainWindow/windowState").toByteArray());
+
+    connect(qApp, &QGuiApplication::applicationStateChanged, this, &Pixmicro::SlotApplicationStateChanged);
+    UpdateScreensaverSetting();
+}
+
+///////////////////////////////////////////////////////////////////////////////
+///
+///////////////////////////////////////////////////////////////////////////////
+
+void Pixmicro::CreateDockWindows()
+{
+    QDockWidget* dockWnd;
+
+    dockWnd = new CameraSelectWnd();
+    addDockWidget(Qt::RightDockWidgetArea, dockWnd);
+    m_MenuWindows->addAction(dockWnd->toggleViewAction());
+
+    m_HoleDetectWnd = new HoleDetectWnd();
+    addDockWidget(Qt::RightDockWidgetArea, m_HoleDetectWnd);
+    m_MenuWindows->addAction(m_HoleDetectWnd->toggleViewAction());
+    connect(m_HoleDetectWnd, &HoleDetectWnd::SignalCalibrateCrosshair, this, &Pixmicro::SlotCalibrateCrosshair);
+
+    m_GalleryWnd = new GalleryWnd();
+    m_GalleryWnd->setVisible(true);
+    addDockWidget(Qt::RightDockWidgetArea, m_GalleryWnd);
+    m_MenuWindows->addAction(m_GalleryWnd->toggleViewAction());
+    connect(m_GalleryWnd, &GalleryWnd::SignalMakeSnapshot, this, &Pixmicro::SlotTakeSnapshot);
+    connect(m_GalleryWnd, &GalleryWnd::SignalSelectionChanged, this, &Pixmicro::SlotGallerySelectionChanged);
+
+    m_MeasureWnd = new MeasureWnd();
+    m_MeasureWnd->setVisible(true);
+    addDockWidget(Qt::RightDockWidgetArea, m_MeasureWnd);
+    m_MenuWindows->addAction(m_MeasureWnd->toggleViewAction());
+
+    dockWnd = new EdgeDetectWnd();
+    dockWnd->setVisible(false);
+    addDockWidget(Qt::RightDockWidgetArea, dockWnd);
+    m_MenuWindows->addAction(dockWnd->toggleViewAction());
+
+    m_VideoView->SetHoleDetectWnd(m_HoleDetectWnd);
+    m_VideoView->SetMeasureWnd(m_MeasureWnd);
+}
+
+///////////////////////////////////////////////////////////////////////////////
+///
+///////////////////////////////////////////////////////////////////////////////
+
+void Pixmicro::CreateToolbars()
+{
+    m_VideoView->AddToolbars(this);
 }
 
 ///////////////////////////////////////////////////////////////////////////////
@@ -93,6 +144,11 @@ void Pixmicro::closeEvent(QCloseEvent* event)
 {
     QSettings prefs;
 
+    m_VideoView->SaveSettings();
+    m_GalleryWnd->SaveSettings();
+    m_MeasureWnd->SaveSettings();
+    ValuePrefixes::Get().SaveSettings();
+
     prefs.setValue("MainWindow/geometry", saveGeometry());
     prefs.setValue("MainWindow/windowState", saveState());
 }
@@ -104,6 +160,64 @@ void Pixmicro::closeEvent(QCloseEvent* event)
 void Pixmicro::SlotCalibrateCrosshair()
 {
     m_VideoView->CalibrateCrosshair();
+}
+
+///////////////////////////////////////////////////////////////////////////////
+///
+///////////////////////////////////////////////////////////////////////////////
+
+void Pixmicro::SlotTakeSnapshot(bool* result, const QString& path, double scale, bool includeOverlay)
+{
+    *result = m_VideoView->TakeSnapshot(path, scale, includeOverlay);
+}
+
+///////////////////////////////////////////////////////////////////////////////
+///
+///////////////////////////////////////////////////////////////////////////////
+
+void Pixmicro::SlotGallerySelectionChanged(const QString& path)
+{
+    if (path.isEmpty()) {
+        m_CaptureWorker.Start(true);
+    } else {
+        m_CaptureWorker.Start(false);
+
+        QImage image;
+        image.load(path);
+        m_VideoView->Update(&image, false);
+        m_StatusBar->showMessage(path);
+
+    }
+    UpdateScreensaverSetting();
+}
+
+///////////////////////////////////////////////////////////////////////////////
+///
+///////////////////////////////////////////////////////////////////////////////
+
+void Pixmicro::UpdateScreensaverSetting()
+{
+    if (m_CaptureWorker.IsStreaming() && qApp->applicationState() == Qt::ApplicationActive)
+    {
+#ifdef Q_OS_WIN32
+        SetThreadExecutionState(ES_CONTINUOUS | ES_DISPLAY_REQUIRED | ES_SYSTEM_REQUIRED);
+#endif
+    }
+    else
+    {
+#ifdef Q_OS_WIN32
+        SetThreadExecutionState(ES_CONTINUOUS);
+#endif
+    }
+}
+
+///////////////////////////////////////////////////////////////////////////////
+///
+///////////////////////////////////////////////////////////////////////////////
+
+void Pixmicro::SlotApplicationStateChanged(Qt::ApplicationState state)
+{
+    UpdateScreensaverSetting();
 }
 
 ///////////////////////////////////////////////////////////////////////////////
@@ -157,18 +271,24 @@ void Pixmicro::StartCapture()
 ///
 ///////////////////////////////////////////////////////////////////////////////
 
-void Pixmicro::SlotFrameReady(cv::Mat image, qint64 captureTime, qint64 processTime)
+void Pixmicro::SlotFrameReady(const QVideoFrame &inFrame, qint64 captureTime, qint64 processTime)
 {
-//	QImage img((const unsigned char*)(image.data), image.cols, image.rows, QImage::Format_Grayscale8);
-    QImage img((const unsigned char*)(image.data), image.cols, image.rows, QImage::Format_RGB32);
-    
-    m_VideoView->Update(&img, m_HoleDetectWnd->IsEnabled(), m_HoleDetectWnd->IsCenterColorFrozen(), m_HoleDetectWnd->GetThreshold(), m_HoleDetectWnd->GetRoundness());
+    QVideoFrame frame(inFrame);
+    if (m_CaptureWorker.IsStreaming()) // Ignore updates that was lingering in the queue when capturing was stopped
+    {
+        if (frame.map(QAbstractVideoBuffer::ReadOnly))
+        {
+            QImage img(frame.bits(), frame.width(), frame.height(), QVideoFrame::imageFormatFromPixelFormat(frame.pixelFormat()));
+            m_VideoView->Update(&img, true);
+            frame.unmap();
 
-    qint64 elapsed = timer.elapsed();
-    timer.start();
-    QString statusText;
-    statusText.sprintf("Scale time: %d (%.1f), %d, %d", elapsed, 1000.0f / double(elapsed), captureTime, processTime);
+            qint64 elapsed = timer.elapsed();
+            timer.start();
+            QString statusText;
+            statusText.sprintf("Scale time: %d (%.1f), %d, %d", elapsed, 1000.0f / double(elapsed), captureTime, processTime);
 
-    m_StatusBar->showMessage(statusText);
+            m_StatusBar->showMessage(statusText);
+        }
+    }
 }
 

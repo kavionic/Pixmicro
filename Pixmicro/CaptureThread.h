@@ -33,7 +33,7 @@ public:
     virtual bool present(const QVideoFrame &frame) override;
 
 signals:
-    void SignalFrameCaptured(cv::Mat frame, qint64 processingTime);
+    void SignalFrameCaptured(const QVideoFrame &frame, qint64 processingTime);
 };
 
 class CaptureThread : public QObject
@@ -49,27 +49,21 @@ public:
     bool OpenCamera(const QCameraInfo& cameraInfo);
     void CloseCamera();
 
-//    void SetCamera(int index);
+    void Start(bool doRun);
+    bool IsStreaming() const { return m_IsStreaming; }
 
 signals:
-    void SignalFrameReady(cv::Mat frame, qint64 captureTime, qint64 processTime);
+    void SignalFrameReady(const QVideoFrame &frame, qint64 captureTime, qint64 processTime);
 
 private slots:
     void SlotStarted();
-//    void SlotFrameTimer();
-    void SlotFrameCaptured(cv::Mat frame, qint64 processingTime);
+    void SlotFrameCaptured(const QVideoFrame &frame, qint64 processingTime);
     void SlotImageCaptured(int id, const QImage &preview);
 
 private:
+    QSharedPointer<QCamera> m_Camera;
+    VideoCapturer           m_VideoCapturer;
 
-    QTimer m_FrameTimer;
-//    QAtomicInt m_WantedCamera;
-//    int        m_CurrentCamera;
-
-    QSharedPointer<QCamera>             m_QCamera;
-//    QSharedPointer<QCameraImageCapture> m_ImageCapture;
-    VideoCapturer                       m_VideoCapturer;
-    cv::VideoCapture m_Camera; // open the default camera
-
+    bool                    m_IsStreaming;
 };
 

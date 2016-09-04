@@ -20,54 +20,75 @@
 #include "CaptureThread.h"
 #include "CameraSettings.h"
 
+///////////////////////////////////////////////////////////////////////////////
+///
+///////////////////////////////////////////////////////////////////////////////
+
 CaptureThread::CaptureThread()
 {
-//    m_WantedCamera = 0;
-//    m_CurrentCamera = -1;
-
-//    OpenCamera(CameraSettings::GetInstance()->GetSelectedCamera());
+    m_IsStreaming = true;
 }
 
+///////////////////////////////////////////////////////////////////////////////
+///
+///////////////////////////////////////////////////////////////////////////////
 
 CaptureThread::~CaptureThread()
 {
 }
 
+///////////////////////////////////////////////////////////////////////////////
+///
+///////////////////////////////////////////////////////////////////////////////
+
 void CaptureThread::SetThread( QThread* thread )
 {
     moveToThread(thread);
-    m_FrameTimer.moveToThread(thread);
 
     connect(thread, SIGNAL(started()), this, SLOT(SlotStarted()));
 }
-/*
-void CaptureThread::SetCamera(int index)
-{
-    m_WantedCamera = index;
-}
-*/
+
+///////////////////////////////////////////////////////////////////////////////
+///
+///////////////////////////////////////////////////////////////////////////////
+
 void CaptureThread::SlotStarted()
 {
     connect(&m_VideoCapturer, &VideoCapturer::SignalFrameCaptured, this, &CaptureThread::SlotFrameCaptured);
-    //    connect(&m_FrameTimer, SIGNAL(timeout()), this, SLOT(SlotFrameTimer()));
-//    m_FrameTimer.start(1000 / 300);
 }
+
+///////////////////////////////////////////////////////////////////////////////
+///
+///////////////////////////////////////////////////////////////////////////////
 
 bool CaptureThread::OpenCamera(const QCameraInfo& cameraInfo)
 {
-    if (m_QCamera != nullptr)
+    if (m_Camera != nullptr && m_IsStreaming)
     {
-        m_QCamera->stop();
+        m_Camera->stop();
     }
-    m_QCamera.reset(new QCamera(cameraInfo));
+    m_Camera.reset(new QCamera(cameraInfo));
     //QSharedPointer<QCameraViewFinder>
-    m_QCamera->setViewfinder(&m_VideoCapturer);
+
+    m_Camera->setViewfinder(&m_VideoCapturer);
     
 
-    m_QCamera->start();
-    //    m_ImageCapture.reset(new QCameraImageCapture(m_QCamera.data()));
+    if (m_IsStreaming) {
+        m_Camera->start();
+    }
+    QCameraViewfinderSettings settings; // = m_Camera->viewfinderSettings();
+    QList<QSize> resolutions = m_Camera->supportedViewfinderResolutions();
+//    settings.setResolution(resolutions[9/*resolutions.size()-2*/]);
+    QList<QCamera::FrameRateRange> framerates = m_Camera->supportedViewfinderFrameRateRanges(settings);
+    //    settings.setMaximumFrameRate(5);
+//    settings.setMinimumFrameRate(5);
+    
+//    settings.setMinimumFrameRate(framerates[framerates.size()-1].minimumFrameRate);
+//    settings.setMaximumFrameRate(framerates[framerates.size()-1].maximumFrameRate);
+//    m_Camera->setViewfinderSettings(settings);
+    //    m_ImageCapture.reset(new QCameraImageCapture(m_Camera.data()));
 
-    QList<QCamera::FrameRateRange> frameRateList = m_QCamera->supportedViewfinderFrameRateRanges();
+/*    QList<QCamera::FrameRateRange> frameRateList = m_Camera->supportedViewfinderFrameRateRanges();
 
     qreal framerate = 5.0;
     for (int i = 0; i < frameRateList.length(); ++i)
@@ -77,89 +98,66 @@ bool CaptureThread::OpenCamera(const QCameraInfo& cameraInfo)
     }
     if ( framerate > 0.0 )
     {
-        QCameraViewfinderSettings viewFinderSettings = m_QCamera->viewfinderSettings();
+        QCameraViewfinderSettings viewFinderSettings = m_Camera->viewfinderSettings();
         viewFinderSettings.setMaximumFrameRate(framerate);
         viewFinderSettings.setMinimumFrameRate(framerate);
-        m_QCamera->setViewfinderSettings(viewFinderSettings);
-    }
+        m_Camera->setViewfinderSettings(viewFinderSettings);
+    }*/
     return true;
 }
+
+///////////////////////////////////////////////////////////////////////////////
+///
+///////////////////////////////////////////////////////////////////////////////
 
 void CaptureThread::CloseCamera()
 {
 //    m_ImageCapture.clear();
-    m_QCamera.clear();
+    m_Camera.clear();
 }
+
+///////////////////////////////////////////////////////////////////////////////
+///
+///////////////////////////////////////////////////////////////////////////////
+
+void CaptureThread::Start(bool doRun)
+{
+    if (doRun != m_IsStreaming)
+    {
+        if (!doRun) {
+            m_Camera->stop();
+        }
+        else {
+            m_Camera->start();
+        }
+        m_IsStreaming = doRun;
+    }
+}
+
+///////////////////////////////////////////////////////////////////////////////
+///
+///////////////////////////////////////////////////////////////////////////////
 
 void CaptureThread::SlotImageCaptured(int id, const QImage &preview)
 {
 
 }
 
-/*void CaptureThread::SlotFrameTimer()
+///////////////////////////////////////////////////////////////////////////////
+///
+///////////////////////////////////////////////////////////////////////////////
+
+void CaptureThread::SlotFrameCaptured(const QVideoFrame &frame, qint64 captureTime)
 {
-    if (m_CurrentCamera != m_WantedCamera)
-    {
-        m_CurrentCamera = m_WantedCamera;
-        m_Camera.open(m_CurrentCamera);
-    }*/
-
-void CaptureThread::SlotFrameCaptured(cv::Mat frame, qint64 captureTime)
-{
-    QElapsedTimer timer;
-    timer.start();
-
-//    qint64 captureTime;
-    qint64 processTime;
-
-    cv::Mat grayFrame;
-    cv::Mat scaledFrame;
-
-//    captureTime = timer.elapsed();
-//    timer.start();
-    //        cv::resize(frame, scaledFrame, cv::Size(160, 120));
-    //        frame = scaledFrame;
-
-//    cv::medianBlur(frame, frame, 5/*cv::Size(5, 5)*/);
-//    cv::cvtColor(frame, frame, CV_BGRA2RGBA);
-    cv::cvtColor(frame, grayFrame, CV_RGBA2GRAY);
-    cv::blur(grayFrame, grayFrame, cv::Size(10, 10));
-    //cv::medianBlur(grayFrame, grayFrame, 5);
-
-    if (CameraSettings::GetInstance()->IsEdgeDetectEnabled())
-    {
-        QColor color = CameraSettings::GetInstance()->GetEdgeDetectColor();
-
-        cv::Canny(grayFrame, grayFrame, CameraSettings::GetInstance()->GetEdgeDetectMinThres(), CameraSettings::GetInstance()->GetEdgeDetectMaxThres(), 3, true);
-
-        scaledFrame = cv::Mat(grayFrame.size[0], grayFrame.size[1], CV_8UC4, cv::Scalar(color.blue(), color.green(), color.red()));
-        cv::bitwise_not(grayFrame, grayFrame);
-        frame.copyTo(scaledFrame, grayFrame);
-        frame = scaledFrame;
-    }
-
-    emit SignalFrameReady(frame, captureTime, timer.elapsed());
+    emit SignalFrameReady(frame, captureTime, 0);
 }
+
+///////////////////////////////////////////////////////////////////////////////
+///
+///////////////////////////////////////////////////////////////////////////////
 
 bool VideoCapturer::present(const QVideoFrame &inFrame)
 {
-    QElapsedTimer timer;
-    timer.start();
-    QVideoFrame frame(inFrame);
-    if (frame.map(QAbstractVideoBuffer::ReadOnly))
-    {
-        const uchar* data = frame.bits();
-        auto bytesPerLine = frame.bytesPerLine();
-
-        QVideoFrame::PixelFormat pixelFormat = frame.pixelFormat();
-        cv::Mat cvFrame(cv::Size(frame.width(), frame.height()), (pixelFormat == QVideoFrame::Format_BGR24) ? CV_8UC3 : CV_8UC4, (void*)data);
-        cvFrame = cvFrame.clone().reshape((pixelFormat == QVideoFrame::Format_BGR24) ? 3 : 4, frame.height());
-        frame.unmap();
-
-        if (pixelFormat == QVideoFrame::Format_RGB24) {
-            cv::cvtColor(cvFrame, cvFrame, CV_RGB2RGBA);
-        }
-        emit SignalFrameCaptured(cvFrame, timer.elapsed());
-    }
+    emit SignalFrameCaptured(inFrame, 0);
     return true;
 }

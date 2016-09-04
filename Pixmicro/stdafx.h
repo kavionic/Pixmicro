@@ -25,4 +25,6 @@
 #include <qabstractvideosurface.h>
 #include <qcameraimagecapture.h>
 
-#include <opencv2/opencv.hpp>
+#include <stack>
+
+//#include <opencv2/opencv.hpp>

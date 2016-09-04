@@ -58,7 +58,7 @@
         <number>0</number>
        </property>
        <item>
-        <widget class="VideoView" name="m_VideoView">
+        <widget class="VideoView" name="m_VideoView" native="true">
          <property name="sizePolicy">
           <sizepolicy hsizetype="Ignored" vsizetype="Ignored">
            <horstretch>0</horstretch>
@@ -138,9 +138,6 @@
          <property name="autoFillBackground">
           <bool>true</bool>
          </property>
-         <property name="text">
-          <string/>
-         </property>
         </widget>
        </item>
       </layout>
@@ -159,22 +156,28 @@
    </property>
    <widget class="QMenu" name="menuFile">
     <property name="title">
-     <string>File</string>
+     <string>&amp;File</string>
     </property>
     <addaction name="actionOpen_Image"/>
     <addaction name="actionPreferences"/>
    </widget>
    <widget class="QMenu" name="m_MenuCamera">
     <property name="title">
-     <string>Camera</string>
+     <string>&amp;Camera</string>
     </property>
    </widget>
    <widget class="QMenu" name="m_MenuWindows">
     <property name="title">
-     <string>Windows</string>
+     <string>&amp;Windows</string>
+    </property>
+   </widget>
+   <widget class="QMenu" name="m_MenuEdit">
+    <property name="title">
+     <string>&amp;Edit</string>
     </property>
    </widget>
    <addaction name="menuFile"/>
+   <addaction name="m_MenuEdit"/>
    <addaction name="m_MenuCamera"/>
    <addaction name="m_MenuWindows"/>
   </widget>
@@ -183,7 +186,7 @@
     <enum>TopToolBarArea</enum>
    </attribute>
    <attribute name="toolBarBreak">
-    <bool>false</bool>
+    <bool>true</bool>
    </attribute>
   </widget>
   <widget class="QStatusBar" name="m_StatusBar"/>
@@ -242,7 +245,7 @@
  <customwidgets>
   <customwidget>
    <class>VideoView</class>
-   <extends>QLabel</extends>
+   <extends>QWidget</extends>
    <header>VideoView.h</header>
   </customwidget>
  </customwidgets>

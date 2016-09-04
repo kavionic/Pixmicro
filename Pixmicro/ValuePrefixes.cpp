@@ -17,25 +17,14 @@
 ///////////////////////////////////////////////////////////////////////////////
 
 #include "stdafx.h"
-#include "Pixmicro.h"
-#include "CameraSettings.h"
 
-#include <QtWidgets/QApplication>
+#include "ValuePrefixes.h"
 
-int main(int argc, char *argv[])
+
+
+ValuePrefixes& ValuePrefixes::Get()
 {
-	QApplication app(argc, argv);
-        app.setApplicationName("Pixmicro");
-        app.setApplicationVersion("0.1");
-        app.setOrganizationName("Kavionic");
-        app.setOrganizationDomain("kavionic.com");
-
-        int result;
-        CameraSettings camSettings;
-        {
-            Pixmicro wnd;
-            wnd.show();
-            result = app.exec();
-        }
-	return result;
+    static ValuePrefixes instance;
+    return instance;
 }
+

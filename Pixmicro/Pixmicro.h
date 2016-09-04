@@ -25,6 +25,8 @@
 #include "CaptureThread.h"
 
 class HoleDetectWnd;
+class GalleryWnd;
+class MeasureWnd;
 
 class Pixmicro : public QMainWindow, private Ui::PixmicroClass
 {
@@ -32,6 +34,10 @@ class Pixmicro : public QMainWindow, private Ui::PixmicroClass
 
 public:
     Pixmicro(QWidget *parent = 0);
+
+    void CreateDockWindows();
+    void CreateToolbars();
+
     ~Pixmicro();
 
     void closeEvent(QCloseEvent* event);
@@ -39,21 +45,27 @@ public:
 
 
 private slots:
+    void SlotApplicationStateChanged(Qt::ApplicationState state);
     void SlotCameraMenuOpening();
     void SlotCameraMenuTriggered(QAction* action);
     void SlotSelectedCameraChanged(const QCameraInfo& cameraInfo);
     void SlotCalibrateCrosshair();
-    void SlotFrameReady(cv::Mat image, qint64 captureTime, qint64 processTime);
+    void SlotTakeSnapshot(bool* result, const QString& path, double scale, bool includeOverlay);
+    void SlotGallerySelectionChanged(const QString& path);
+    void SlotFrameReady(const QVideoFrame &frame, qint64 captureTime, qint64 processTime);
 
 private:
-
+    void UpdateScreensaverSetting();
     CaptureThread m_CaptureWorker;
     QThread       m_CaptureThread;
     QElapsedTimer timer;
 
     HoleDetectWnd* m_HoleDetectWnd;
+    GalleryWnd*    m_GalleryWnd;
+    MeasureWnd*    m_MeasureWnd;
+
 };
 
-Q_DECLARE_METATYPE(cv::Mat);
+//Q_DECLARE_METATYPE(cv::Mat);
 
 #endif // PIXMICRO_H

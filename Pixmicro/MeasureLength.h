@@ -16,26 +16,22 @@
 // along with Pixmicro. If not, see < http://www.gnu.org/licenses/>.
 ///////////////////////////////////////////////////////////////////////////////
 
-#include "stdafx.h"
-#include "Pixmicro.h"
-#include "CameraSettings.h"
+#ifndef MEASURELENGTH_H
+#define MEASURELENGTH_H
 
-#include <QtWidgets/QApplication>
 
-int main(int argc, char *argv[])
+#include "MeasurePointList.h"
+
+class MeasureLength : public MeasurePointList
 {
-	QApplication app(argc, argv);
-        app.setApplicationName("Pixmicro");
-        app.setApplicationVersion("0.1");
-        app.setOrganizationName("Kavionic");
-        app.setOrganizationDomain("kavionic.com");
+    Q_OBJECT
 
-        int result;
-        CameraSettings camSettings;
-        {
-            Pixmicro wnd;
-            wnd.show();
-            result = app.exec();
-        }
-	return result;
-}
+public:
+    static void Create(VideoView* view, int id, const QString& name, const PMPoint& startPos);
+    MeasureLength(VideoView* view, int32_t id, const QString& name, const PMPoint& start);
+
+    virtual void Paint(QPainter& painter, const PMPoint& scale) override;
+
+};
+
+#endif // MEASURELENGTH_H

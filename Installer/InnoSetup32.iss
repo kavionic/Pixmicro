@@ -11,8 +11,8 @@
 ; NOTE: The value of AppId uniquely identifies this application.
 ; Do not use the same AppId value in installers for other applications.
 ; (To generate a new GUID, click Tools | Generate GUID inside the IDE.)
-ArchitecturesInstallIn64BitMode=x64
-ArchitecturesAllowed=x64
+ArchitecturesInstallIn64BitMode=
+ArchitecturesAllowed=
 AppId={{0A5D3E5B-B330-4C34-9DBC-8116C99FDC66}
 AppName={#MyAppName}
 AppVersion={#MyAppVersion}
@@ -25,7 +25,7 @@ DefaultDirName={pf}\{#MyAppName}
 DefaultGroupName={#MyAppName}
 LicenseFile=C:\Project\Pixmicro\Pixmicro\COPYING.txt
 OutputDir=C:\Project\Pixmicro\Installer
-OutputBaseFilename=PixmicroSetup-{#MyAppVersion}
+OutputBaseFilename=PixmicroSetup32-{#MyAppVersion}
 Compression=lzma
 SolidCompression=yes
 
@@ -37,17 +37,17 @@ Name: "desktopicon"; Description: "{cm:CreateDesktopIcon}"; GroupDescription: "{
 Name: "quicklaunchicon"; Description: "{cm:CreateQuickLaunchIcon}"; GroupDescription: "{cm:AdditionalIcons}"; Flags: unchecked; OnlyBelowVersion: 0,6.1
 
 [Files]
-Source: "C:\Project\Pixmicro\x64\Release\Pixmicro.exe"; DestDir: "{app}"; Flags: ignoreversion
-Source: "C:\Qt\5.5\msvc2013_64\bin\Qt5Core.dll"; DestDir: "{app}"; Flags: ignoreversion
-Source: "C:\Qt\5.5\msvc2013_64\bin\Qt5Gui.dll"; DestDir: "{app}"; Flags: ignoreversion
-Source: "C:\Qt\5.5\msvc2013_64\bin\Qt5Multimedia.dll"; DestDir: "{app}"; Flags: ignoreversion
-Source: "C:\Qt\5.5\msvc2013_64\bin\Qt5Network.dll"; DestDir: "{app}"; Flags: ignoreversion
-Source: "C:\Qt\5.5\msvc2013_64\bin\Qt5Widgets.dll"; DestDir: "{app}"; Flags: ignoreversion
+Source: "C:\Project\Pixmicro\Win32\Release\Pixmicro.exe"; DestDir: "{app}"; Flags: ignoreversion
+Source: "C:\Qt\5.5\msvc2013\bin\Qt5Core.dll"; DestDir: "{app}"; Flags: ignoreversion
+Source: "C:\Qt\5.5\msvc2013\bin\Qt5Gui.dll"; DestDir: "{app}"; Flags: ignoreversion
+Source: "C:\Qt\5.5\msvc2013\bin\Qt5Multimedia.dll"; DestDir: "{app}"; Flags: ignoreversion
+Source: "C:\Qt\5.5\msvc2013\bin\Qt5Network.dll"; DestDir: "{app}"; Flags: ignoreversion
+Source: "C:\Qt\5.5\msvc2013\bin\Qt5Widgets.dll"; DestDir: "{app}"; Flags: ignoreversion
 
-Source: "C:\Qt\5.5\msvc2013_64\plugins\platforms\qwindows.dll"; DestDir: "{app}/platforms"; Flags: ignoreversion
-Source: "C:\Qt\5.5\msvc2013_64\plugins\mediaservice\dsengine.dll"; DestDir: "{app}/mediaservice"; Flags: ignoreversion
-Source: "C:\Qt\5.5\msvc2013_64\plugins\mediaservice\qtmedia_audioengine.dll"; DestDir: "{app}/mediaservice"; Flags: ignoreversion
-Source: "C:\Qt\5.5\msvc2013_64\plugins\mediaservice\wmfengine.dll"; DestDir: "{app}/mediaservice"; Flags: ignoreversion
+Source: "C:\Qt\5.5\msvc2013\plugins\platforms\qwindows.dll"; DestDir: "{app}/platforms"; Flags: ignoreversion
+Source: "C:\Qt\5.5\msvc2013\plugins\mediaservice\dsengine.dll"; DestDir: "{app}/mediaservice"; Flags: ignoreversion
+Source: "C:\Qt\5.5\msvc2013\plugins\mediaservice\qtmedia_audioengine.dll"; DestDir: "{app}/mediaservice"; Flags: ignoreversion
+Source: "C:\Qt\5.5\msvc2013\plugins\mediaservice\wmfengine.dll"; DestDir: "{app}/mediaservice"; Flags: ignoreversion
 
 ; NOTE: Don't use "Flags: ignoreversion" on any shared system files
 

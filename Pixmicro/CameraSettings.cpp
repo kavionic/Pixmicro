@@ -17,6 +17,7 @@
 ///////////////////////////////////////////////////////////////////////////////
 
 #include "stdafx.h"
+#include <assert.h>
 #include "CameraSettings.h"
 
 CameraSettings* CameraSettings::s_Instance;
